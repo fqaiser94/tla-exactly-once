@@ -8,57 +8,63 @@ VARIABLES InputTopic, Buffer, OutputTopic, CommittedConsumerOffset, PC
 
 vars == <<InputTopic, Buffer, OutputTopic, CommittedConsumerOffset, PC>>
 
+Processes == {1, 2}
+
 Init ==
     /\ InputTopic = <<1>>
-    /\ Buffer = NULL
+    /\ Buffer = [ process \in Processes |-> NULL ]
     /\ OutputTopic = <<>>
     /\ CommittedConsumerOffset = 1
-    /\ PC = "Consume"
+    /\ PC = [ process \in Processes |-> "Consume" ]
 
 MessagesAvailable == CommittedConsumerOffset < Len(InputTopic) + 1
 
-Consume ==
-    /\ PC = "Consume"
+Update(function, x, y) == [ function EXCEPT ![x] = y ]
+
+Consume(process) ==
+    /\ PC[process] = "Consume"
     /\ IF MessagesAvailable
-       THEN /\ Buffer' = InputTopic[CommittedConsumerOffset]
-            /\ PC' = "ProduceCommit"
-       ELSE /\ Buffer' = NULL
-            /\ PC' = "Done"
+       THEN /\ Buffer' = Update(Buffer, process, InputTopic[CommittedConsumerOffset])
+            /\ PC' = Update(PC, process, "ProduceCommit")
+       ELSE /\ Buffer' = Update(Buffer, process, NULL)
+            /\ PC' = Update(PC, process, "Done")
     /\ UNCHANGED <<InputTopic, OutputTopic, CommittedConsumerOffset>>
 
-ProduceCommit ==
-    /\ PC = "ProduceCommit"
-    /\ OutputTopic' = Append(OutputTopic, Buffer)
-    /\ CommittedConsumerOffset' = Buffer + 1
-    /\ PC' = "Consume"
+ProduceCommit(process) ==
+    /\ PC[process] = "ProduceCommit"
+    /\ OutputTopic' = Append(OutputTopic, Buffer[process])
+    /\ CommittedConsumerOffset' = Buffer[process] + 1
+    /\ PC' = Update(PC, process, "Consume")
     /\ UNCHANGED <<InputTopic, Buffer>>
 
-Done ==
-    /\ PC = "Done"
+Done(process) ==
+    /\ PC[process] = "Done"
     /\ UNCHANGED vars
 
-Restart ==
-    /\ PC /= "Done"
-    /\ Buffer' = NULL
-    /\ PC' = "Consume"
+Restart(process) ==
+    /\ PC[process] /= "Done"
+    /\ Buffer' = Update(Buffer, process, NULL)
+    /\ PC' = Update(PC, process, "Consume")
     /\ UNCHANGED <<InputTopic, OutputTopic, CommittedConsumerOffset>>
 
 Next ==
-    \/ Consume
-    \/ ProduceCommit
-    \/ Done
-    \/ Restart
+    \E process \in Processes:
+        \/ Consume(process)
+        \/ ProduceCommit(process)
+        \/ Restart(process)
+        \/ Done(process)
 
 Fairness ==
-    /\ WF_vars(Next)
-    /\ SF_vars(ProduceCommit)
+    \E process \in Processes:
+        /\ WF_vars(Next)
+        /\ SF_vars(ProduceCommit(process))
 
 Spec ==
     /\ Init
     /\ [][Next]_vars
     /\ Fairness
 
-Termination == <>[](PC = "Done")
+Termination == <>[](\A process \in Processes: PC[process] = "Done")
 
 NoDuplicatesIn(seq) ==
     \A i, j \in 1..Len(seq):
