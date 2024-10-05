@@ -4,9 +4,9 @@ EXTENDS Sequences, Integers
 
 CONSTANT NULL
 
-VARIABLES InputTopic, Buffer, OutputTopic, CommittedConsumerOffset, PC
+VARIABLES InputTopic, Buffer, OutputTopic, CommittedConsumerOffset, PC, CurrentToken, Token
 
-vars == <<InputTopic, Buffer, OutputTopic, CommittedConsumerOffset, PC>>
+vars == <<InputTopic, Buffer, OutputTopic, CommittedConsumerOffset, PC, CurrentToken, Token>>
 
 Processes == {1, 2}
 
@@ -15,11 +15,20 @@ Init ==
     /\ Buffer = [ process \in Processes |-> NULL ]
     /\ OutputTopic = <<>>
     /\ CommittedConsumerOffset = 1
-    /\ PC = [ process \in Processes |-> "Consume" ]
+    /\ PC = [ process \in Processes |-> "AcquireToken" ]
+    /\ CurrentToken = 0
+    /\ Token = [ process \in Processes |-> NULL ]
 
 MessagesAvailable == CommittedConsumerOffset < Len(InputTopic) + 1
 
 Update(function, x, y) == [ function EXCEPT ![x] = y ]
+
+AcquireToken(process) ==
+    /\ PC[process] = "AcquireToken"
+    /\ CurrentToken' = CurrentToken + 1
+    /\ Token' = Update(Token, process, CurrentToken')
+    /\ PC' = Update(PC, process, "Consume")
+    /\ UNCHANGED <<InputTopic, Buffer, OutputTopic, CommittedConsumerOffset>>
 
 Consume(process) ==
     /\ PC[process] = "Consume"
@@ -28,30 +37,39 @@ Consume(process) ==
             /\ PC' = Update(PC, process, "ProduceCommit")
        ELSE /\ Buffer' = Update(Buffer, process, NULL)
             /\ PC' = Update(PC, process, "Done")
-    /\ UNCHANGED <<InputTopic, OutputTopic, CommittedConsumerOffset>>
+    /\ UNCHANGED <<InputTopic, OutputTopic, CommittedConsumerOffset, CurrentToken, Token>>
 
 ProduceCommit(process) ==
     /\ PC[process] = "ProduceCommit"
-    /\ OutputTopic' = Append(OutputTopic, Buffer[process])
-    /\ CommittedConsumerOffset' = Buffer[process] + 1
-    /\ PC' = Update(PC, process, "Consume")
-    /\ UNCHANGED <<InputTopic, Buffer>>
+    /\ IF Token[process] = CurrentToken
+       THEN /\ OutputTopic' = Append(OutputTopic, Buffer[process])
+            /\ CommittedConsumerOffset' = Buffer[process] + 1
+            /\ PC' = Update(PC, process, "Consume")
+            /\ UNCHANGED <<InputTopic, Buffer, CurrentToken, Token>>
+       ELSE /\ PC' = Update(PC, process, "Fenced")
+            /\ UNCHANGED <<InputTopic, Buffer, OutputTopic, CommittedConsumerOffset, CurrentToken, Token>>
+
+Fenced(process) ==
+    /\ PC[process] = "Fenced"
+    /\ UNCHANGED vars
 
 Done(process) ==
     /\ PC[process] = "Done"
     /\ UNCHANGED vars
 
 Restart(process) ==
-    /\ PC[process] /= "Done"
+    /\ PC[process] \notin {"Fenced", "Done"}
     /\ Buffer' = Update(Buffer, process, NULL)
-    /\ PC' = Update(PC, process, "Consume")
-    /\ UNCHANGED <<InputTopic, OutputTopic, CommittedConsumerOffset>>
+    /\ PC' = Update(PC, process, "AcquireToken")
+    /\ UNCHANGED <<InputTopic, OutputTopic, CommittedConsumerOffset, CurrentToken, Token>>
 
 Next ==
     \E process \in Processes:
+        \/ AcquireToken(process)
         \/ Consume(process)
         \/ ProduceCommit(process)
         \/ Restart(process)
+        \/ Fenced(process)
         \/ Done(process)
 
 Fairness ==
@@ -64,7 +82,7 @@ Spec ==
     /\ [][Next]_vars
     /\ Fairness
 
-Termination == <>[](\A process \in Processes: PC[process] = "Done")
+Termination == <>[](\A process \in Processes: PC[process] \in {"Fenced", "Done"})
 
 NoDuplicatesIn(seq) ==
     \A i, j \in 1..Len(seq):
