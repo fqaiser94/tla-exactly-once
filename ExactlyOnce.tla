@@ -49,7 +49,9 @@ Next ==
     \/ Done
     \/ Restart
 
-Fairness == WF_vars(Next)
+Fairness ==
+    /\ WF_vars(Next)
+    /\ SF_vars(ProduceCommit)
 
 Spec ==
     /\ Init
