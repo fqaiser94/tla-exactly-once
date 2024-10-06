@@ -42,11 +42,18 @@ Done ==
     /\ PC = "Done"
     /\ UNCHANGED vars
 
+Restart ==
+    /\ PC /= "Done"
+    /\ Buffer' = NULL
+    /\ PC' = "Consume"
+    /\ UNCHANGED <<InputTopic, OutputTopic, CommittedConsumerOffset>>
+
 Next ==
     \/ Consume
     \/ Produce
     \/ Commit
     \/ Done
+    \/ Restart
 
 Fairness == WF_vars(Next)
 
