@@ -4,31 +4,48 @@ EXTENDS Sequences, Integers
 
 CONSTANT NULL
 
-VARIABLES InputTopic, Buffer, OutputTopic, CommittedConsumerOffset
+VARIABLES InputTopic, Buffer, OutputTopic, CommittedConsumerOffset, PC
 
-vars == <<InputTopic, Buffer, OutputTopic, CommittedConsumerOffset>>
+vars == <<InputTopic, Buffer, OutputTopic, CommittedConsumerOffset, PC>>
 
 Init ==
     /\ InputTopic = <<1>>
     /\ Buffer = NULL
     /\ OutputTopic = <<>>
     /\ CommittedConsumerOffset = 1
+    /\ PC = "Consume"
 
 MessagesAvailable == CommittedConsumerOffset < Len(InputTopic) + 1
 
-ConsumeProduceCommit ==
-    /\ MessagesAvailable
-    /\ Buffer' = InputTopic[CommittedConsumerOffset]
-    /\ OutputTopic' = Append(OutputTopic, Buffer')
-    /\ CommittedConsumerOffset' = Buffer' + 1
-    /\ UNCHANGED InputTopic
+Consume ==
+    /\ PC = "Consume"
+    /\ IF MessagesAvailable
+       THEN /\ Buffer' = InputTopic[CommittedConsumerOffset]
+            /\ PC' = "Produce"
+       ELSE /\ Buffer' = NULL
+            /\ PC' = "Done"
+    /\ UNCHANGED <<InputTopic, OutputTopic, CommittedConsumerOffset>>
+
+Produce ==
+    /\ PC = "Produce"
+    /\ OutputTopic' = Append(OutputTopic, Buffer)
+    /\ PC' = "Commit"
+    /\ UNCHANGED <<InputTopic, Buffer, CommittedConsumerOffset>>
+
+Commit ==
+    /\ PC = "Commit"
+    /\ CommittedConsumerOffset' = Buffer + 1
+    /\ PC' = "Consume"
+    /\ UNCHANGED <<InputTopic, Buffer, OutputTopic>>
 
 Done ==
-    /\ ~MessagesAvailable
+    /\ PC = "Done"
     /\ UNCHANGED vars
 
 Next ==
-    \/ ConsumeProduceCommit
+    \/ Consume
+    \/ Produce
+    \/ Commit
     \/ Done
 
 Fairness == WF_vars(Next)
@@ -38,7 +55,7 @@ Spec ==
     /\ [][Next]_vars
     /\ Fairness
 
-Termination == <>[](~MessagesAvailable)
+Termination == <>[](PC = "Done")
 
 NoDuplicatesIn(seq) ==
     \A i, j \in 1..Len(seq):
