@@ -21,22 +21,17 @@ Consume ==
     /\ PC = "Consume"
     /\ IF MessagesAvailable
        THEN /\ Buffer' = InputTopic[CommittedConsumerOffset]
-            /\ PC' = "Produce"
+            /\ PC' = "ProduceCommit"
        ELSE /\ Buffer' = NULL
             /\ PC' = "Done"
     /\ UNCHANGED <<InputTopic, OutputTopic, CommittedConsumerOffset>>
 
-Produce ==
-    /\ PC = "Produce"
+ProduceCommit ==
+    /\ PC = "ProduceCommit"
     /\ OutputTopic' = Append(OutputTopic, Buffer)
-    /\ PC' = "Commit"
-    /\ UNCHANGED <<InputTopic, Buffer, CommittedConsumerOffset>>
-
-Commit ==
-    /\ PC = "Commit"
     /\ CommittedConsumerOffset' = Buffer + 1
     /\ PC' = "Consume"
-    /\ UNCHANGED <<InputTopic, Buffer, OutputTopic>>
+    /\ UNCHANGED <<InputTopic, Buffer>>
 
 Done ==
     /\ PC = "Done"
@@ -50,8 +45,7 @@ Restart ==
 
 Next ==
     \/ Consume
-    \/ Produce
-    \/ Commit
+    \/ ProduceCommit
     \/ Done
     \/ Restart
 
