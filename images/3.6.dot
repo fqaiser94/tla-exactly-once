@@ -1,0 +1,32 @@
+strict digraph DiskGraph {
+node [ fillcolor = "white", style = "filled,rounded", fontcolor = "#071952", fontname = Monospace, fontsize="14", color = "#071952", shape = box, labeljust = l ];
+color = "#071952";
+edge [ color = "#071952", fontname = Monospace, fontcolor = "#071952", fontsize="14" ];
+nodesep=0.35;
+subgraph cluster_graph {
+color="white";
+6353043280333053788 [label="/\\ CommittedConsumerOffset = 1\l/\\ OutputTopic = <<>>\l/\\ Buffer = NULL\l/\\ PC = \"Consume\"\l/\\ InputTopic = <<1>>\l"]
+6353043280333053788 -> -85030279638054991 [label="Consume"];
+-85030279638054991 [label="/\\ CommittedConsumerOffset = 1\l/\\ OutputTopic = <<>>\l/\\ Buffer = 1\l/\\ PC = \"ProduceCommit\"\l/\\ InputTopic = <<1>>\l"];
+6353043280333053788 -> 6353043280333053788 [label="Restart"];
+6353043280333053788 -> 6353043280333053788 [style="dashed"];
+-85030279638054991 -> 9162193939838828443 [label="ProduceCommit"];
+9162193939838828443 [label="/\\ CommittedConsumerOffset = 2\l/\\ OutputTopic = <<1>>\l/\\ Buffer = 1\l/\\ PC = \"Consume\"\l/\\ InputTopic = <<1>>\l"];
+-85030279638054991 -> 6353043280333053788 [label="Restart"];
+-85030279638054991 -> -85030279638054991 [style="dashed"];
+9162193939838828443 -> 8319890350625417931 [label="Consume"];
+8319890350625417931 [label="/\\ CommittedConsumerOffset = 2\l/\\ OutputTopic = <<1>>\l/\\ Buffer = NULL\l/\\ PC = \"Done\"\l/\\ InputTopic = <<1>>\l"];
+9162193939838828443 -> -4319825802174498039 [label="Restart"];
+-4319825802174498039 [label="/\\ CommittedConsumerOffset = 2\l/\\ OutputTopic = <<1>>\l/\\ Buffer = NULL\l/\\ PC = \"Consume\"\l/\\ InputTopic = <<1>>\l"];
+9162193939838828443 -> 9162193939838828443 [style="dashed"];
+8319890350625417931 -> 8319890350625417931 [label="Done"];
+8319890350625417931 -> 8319890350625417931 [style="dashed"];
+-4319825802174498039 -> 8319890350625417931 [label="Consume"];
+-4319825802174498039 -> -4319825802174498039 [label="Restart"];
+-4319825802174498039 -> -4319825802174498039 [style="dashed"];
+{rank = same; 6353043280333053788;}
+{rank = same; -85030279638054991;}
+{rank = same; 9162193939838828443;}
+{rank = same; -4319825802174498039;8319890350625417931;}
+}
+}

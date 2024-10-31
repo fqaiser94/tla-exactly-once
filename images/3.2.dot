@@ -1,0 +1,29 @@
+strict digraph DiskGraph {
+node [ fillcolor = "white", style = "filled,rounded", fontcolor = "#071952", fontname = Monospace, fontsize="14", color = "#071952", shape = box, labeljust = l ];
+color = "#071952";
+edge [ color = "#071952", fontname = Monospace, fontcolor = "#071952", fontsize="14" ];
+nodesep=0.35;
+subgraph cluster_graph {
+color="white";
+3257080690836736451 [label="/\\ CommittedConsumerOffset = 1\l/\\ OutputTopic = <<>>\l/\\ Buffer = NULL\l/\\ PC = \"Consume\"\l/\\ InputTopic = <<1>>\l"]
+3257080690836736451 -> -7831863476047732246 [label="Consume"];
+-7831863476047732246 [label="/\\ CommittedConsumerOffset = 1\l/\\ OutputTopic = <<>>\l/\\ Buffer = 1\l/\\ PC = \"Produce\"\l/\\ InputTopic = <<1>>\l"];
+3257080690836736451 -> 3257080690836736451 [style="dashed"];
+-7831863476047732246 -> 4935754534077977754 [label="Produce"];
+4935754534077977754 [label="/\\ CommittedConsumerOffset = 1\l/\\ OutputTopic = <<1>>\l/\\ Buffer = 1\l/\\ PC = \"Commit\"\l/\\ InputTopic = <<1>>\l"];
+-7831863476047732246 -> -7831863476047732246 [style="dashed"];
+4935754534077977754 -> -8605013760991972715 [label="Commit"];
+-8605013760991972715 [label="/\\ CommittedConsumerOffset = 2\l/\\ OutputTopic = <<1>>\l/\\ Buffer = 1\l/\\ PC = \"Consume\"\l/\\ InputTopic = <<1>>\l"];
+4935754534077977754 -> 4935754534077977754 [style="dashed"];
+-8605013760991972715 -> 8314963134592336420 [label="Consume"];
+8314963134592336420 [label="/\\ CommittedConsumerOffset = 2\l/\\ OutputTopic = <<1>>\l/\\ Buffer = NULL\l/\\ PC = \"Done\"\l/\\ InputTopic = <<1>>\l"];
+-8605013760991972715 -> -8605013760991972715 [style="dashed"];
+8314963134592336420 -> 8314963134592336420 [label="Done"];
+8314963134592336420 -> 8314963134592336420 [style="dashed"];
+{rank = same; 3257080690836736451;}
+{rank = same; -7831863476047732246;}
+{rank = same; 4935754534077977754;}
+{rank = same; -8605013760991972715;}
+{rank = same; 8314963134592336420;}
+}
+}

@@ -1,0 +1,17 @@
+strict digraph DiskGraph {
+node [ fillcolor = "white", style = "filled,rounded", fontcolor = "#071952", fontname = Monospace, fontsize="14", color = "#071952", shape = box, labeljust = l ];
+color = "#071952";
+edge [ color = "#071952", fontname = Monospace, fontcolor = "#071952", fontsize="14" ];
+nodesep=0.35;
+subgraph cluster_graph {
+color="white";
+-3083645511287434432 [label="/\\ CommittedConsumerOffset = 1\l/\\ OutputTopic = <<>>\l/\\ Buffer = NULL\l/\\ InputTopic = <<1>>\l"]
+-3083645511287434432 -> -6333956506686107510 [label="ConsumeProduceCommit"];
+-6333956506686107510 [label="/\\ CommittedConsumerOffset = 2\l/\\ OutputTopic = <<1>>\l/\\ Buffer = 1\l/\\ InputTopic = <<1>>\l"];
+-3083645511287434432 -> -3083645511287434432 [style="dashed"];
+-6333956506686107510 -> -6333956506686107510 [label="Done"];
+-6333956506686107510 -> -6333956506686107510 [style="dashed"];
+{rank = same; -3083645511287434432;}
+{rank = same; -6333956506686107510;}
+}
+}

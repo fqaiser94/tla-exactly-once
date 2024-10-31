@@ -1,0 +1,54 @@
+strict digraph DiskGraph {
+node [ fillcolor = "white", style = "filled,rounded", fontcolor = "#071952", fontname = Monospace, fontsize="14", color = "#071952", shape = box, labeljust = l ];
+color = "#071952";
+edge [ color = "#071952", fontname = Monospace, fontcolor = "#071952", fontsize="14" ];
+peripheries=0;
+nodesep=0.35;
+subgraph cluster_graph {
+-6212835380769396649 [label="/\\ CommittedConsumerOffset = 1\l/\\ OutputTopic = <<>>\l/\\ Buffer = <<NULL, NULL>>\l/\\ PC = <<\"Consume\", \"Consume\">>\l/\\ InputTopic = <<1>>\l", fillcolor = "#FCACA5"]
+-6212835380769396649 -> -8201640305344448410 [label="Consume"];
+-8201640305344448410 [label="/\\ CommittedConsumerOffset = 1\l/\\ OutputTopic = <<>>\l/\\ Buffer = <<1, NULL>>\l/\\ PC = <<\"ProduceCommit\", \"Consume\">>\l/\\ InputTopic = <<1>>\l"];
+-6212835380769396649 -> -3923797062047348864 [label="Consume"];
+-3923797062047348864 [label="/\\ CommittedConsumerOffset = 1\l/\\ OutputTopic = <<>>\l/\\ Buffer = <<NULL, 1>>\l/\\ PC = <<\"Consume\", \"ProduceCommit\">>\l/\\ InputTopic = <<1>>\l", fillcolor = "#FCACA5"];
+-6212835380769396649 -> -6212835380769396649 [style="dashed"];
+-8201640305344448410 -> -3503351429090496014 [label="ProduceCommit"];
+-3503351429090496014 [label="/\\ CommittedConsumerOffset = 2\l/\\ OutputTopic = <<1>>\l/\\ Buffer = <<1, NULL>>\l/\\ PC = <<\"Consume\", \"Consume\">>\l/\\ InputTopic = <<1>>\l"];
+-8201640305344448410 -> -8120329661411056265 [label="Consume"];
+-8120329661411056265 [label="/\\ CommittedConsumerOffset = 1\l/\\ OutputTopic = <<>>\l/\\ Buffer = <<1, 1>>\l/\\ PC = <<\"ProduceCommit\", \"ProduceCommit\">>\l/\\ InputTopic = <<1>>\l", fillcolor = "#FCACA5"];
+-8201640305344448410 -> -8201640305344448410 [style="dashed"];
+-3923797062047348864 -> -8120329661411056265 [label="Consume"];
+-3923797062047348864 -> 5019849893205036890 [label="ProduceCommit"];
+5019849893205036890 [label="/\\ CommittedConsumerOffset = 2\l/\\ OutputTopic = <<1>>\l/\\ Buffer = <<NULL, 1>>\l/\\ PC = <<\"Consume\", \"Consume\">>\l/\\ InputTopic = <<1>>\l"];
+-3923797062047348864 -> -3923797062047348864 [style="dashed"];
+-3503351429090496014 -> 6808017390472382983 [label="Consume"];
+6808017390472382983 [label="/\\ CommittedConsumerOffset = 2\l/\\ OutputTopic = <<1>>\l/\\ Buffer = <<NULL, NULL>>\l/\\ PC = <<\"Done\", \"Consume\">>\l/\\ InputTopic = <<1>>\l"];
+-3503351429090496014 -> 7904804369032244288 [label="Consume"];
+7904804369032244288 [label="/\\ CommittedConsumerOffset = 2\l/\\ OutputTopic = <<1>>\l/\\ Buffer = <<1, NULL>>\l/\\ PC = <<\"Consume\", \"Done\">>\l/\\ InputTopic = <<1>>\l"];
+-3503351429090496014 -> -3503351429090496014 [style="dashed"];
+-8120329661411056265 -> 8140146744639128270 [label="ProduceCommit"];
+8140146744639128270 [label="/\\ CommittedConsumerOffset = 2\l/\\ OutputTopic = <<1>>\l/\\ Buffer = <<1, 1>>\l/\\ PC = <<\"Consume\", \"ProduceCommit\">>\l/\\ InputTopic = <<1>>\l", fillcolor = "#FCACA5"];
+-8120329661411056265 -> 8247680324514339465 [label="ProduceCommit"];
+8247680324514339465 [label="/\\ CommittedConsumerOffset = 2\l/\\ OutputTopic = <<1>>\l/\\ Buffer = <<1, 1>>\l/\\ PC = <<\"ProduceCommit\", \"Consume\">>\l/\\ InputTopic = <<1>>\l"];
+-8120329661411056265 -> -8120329661411056265 [style="dashed"];
+5019849893205036890 -> 319968446939021747 [label="Consume"];
+319968446939021747 [label="/\\ CommittedConsumerOffset = 2\l/\\ OutputTopic = <<1>>\l/\\ Buffer = <<NULL, 1>>\l/\\ PC = <<\"Done\", \"Consume\">>\l/\\ InputTopic = <<1>>\l"];
+5019849893205036890 -> 2112514323792934719 [label="Consume"];
+2112514323792934719 [label="/\\ CommittedConsumerOffset = 2\l/\\ OutputTopic = <<1>>\l/\\ Buffer = <<NULL, NULL>>\l/\\ PC = <<\"Consume\", \"Done\">>\l/\\ InputTopic = <<1>>\l"];
+5019849893205036890 -> 5019849893205036890 [style="dashed"];
+6808017390472382983 -> 6808017390472382983 [label="Done"];
+6808017390472382983 -> 2796946903401754839 [label="Consume"];
+2796946903401754839 [label="/\\ CommittedConsumerOffset = 2\l/\\ OutputTopic = <<1>>\l/\\ Buffer = <<NULL, NULL>>\l/\\ PC = <<\"Done\", \"Done\">>\l/\\ InputTopic = <<1>>\l"];
+6808017390472382983 -> 6808017390472382983 [style="dashed"];
+7904804369032244288 -> 2796946903401754839 [label="Consume"];
+7904804369032244288 -> 7904804369032244288 [label="Done"];
+7904804369032244288 -> 7904804369032244288 [style="dashed"];
+8140146744639128270 -> -3031873015422629149 [label="Consume"];
+-3031873015422629149 [label="/\\ CommittedConsumerOffset = 2\l/\\ OutputTopic = <<1>>\l/\\ Buffer = <<NULL, 1>>\l/\\ PC = <<\"Done\", \"ProduceCommit\">>\l/\\ InputTopic = <<1>>\l"];
+8140146744639128270 -> 2397090935586754742 [label="ProduceCommit"];
+2397090935586754742 [label="/\\ CommittedConsumerOffset = 2\l/\\ OutputTopic = <<1, 1>>\l/\\ Buffer = <<1, 1>>\l/\\ PC = <<\"Consume\", \"Consume\">>\l/\\ InputTopic = <<1>>\l", fillcolor = "#FCACA5"];
+{rank = same; -6212835380769396649;}
+{rank = same; -3923797062047348864;-8201640305344448410;}
+{rank = same; 5019849893205036890;-3503351429090496014;-8120329661411056265;}
+{rank = same; 8140146744639128270;6808017390472382983;7904804369032244288;}
+}
+}
